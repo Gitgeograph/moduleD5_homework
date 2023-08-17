@@ -1,0 +1,21 @@
+{% extends 'layout/base.html' %}
+{% load custom_filters %}
+{% block title %}
+News | {{ post.title }}
+{% endblock title %}
+{% block content %}
+<div>
+    <h2>{{ post.title|Censor }}</h2>
+    <p> {{ post.creationData|date:'d F Y, H:i' }} </p>
+    <p> {{ post.text|Censor }} </p>
+    <nav class='nav justify-content-end'>
+        <a class='nav-link' href="{% url 'news:post_update' post.id %}">
+            Update
+        </a>
+        <a class='nav-link' href="{% url 'news:post_delete' post.id %}">
+            Delete
+        </a>
+    </nav>
+</div>
+<hr>
+{% endblock content %}

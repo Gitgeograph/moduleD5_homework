@@ -1,0 +1,65 @@
+{% extends "layout/base.html" %}
+
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5 d-flex justify-content-center">
+  <div class="card" style='width:20rem;'>
+    <div class="card-body">
+<h1 class="card-title mb-3">{% trans "Sign In" %}</h1>
+
+{% get_providers as socialaccount_providers %}
+
+{% if socialaccount_providers %}
+
+<div class="socialaccount_ballot">
+  <div class="text-center">
+  <p class="card-text">{% trans 'Sign in with:' %}</p>
+    {% load socialaccount %}
+            {% get_providers as socialaccount_providers %}
+
+            {% for provider in socialaccount_providers %}
+                {% if provider.id == "openid" %}
+                    {% for brand in provider.get_brands %}
+                      <a title="{{brand.name}}" 
+                        class="btn btn-outline-dark ico-container {{provider.id}} {{brand.id}}" 
+                        href="{% provider_login_url provider.id openid=brand.openid_url process=process %}"
+                        >{{brand.name}}</a>
+                    {% endfor %}
+                {% endif %}
+                  <a title="{{provider.name}}" class="btn btn-outline-dark ico-container w-100 {{provider.id}}" 
+                    href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">{{provider.name}}</a>
+            {% endfor %}
+</div>
+
+  <p class="card-text text-center mb-3">{% trans 'or:' %}</p>
+
+
+</div>
+
+{% include "socialaccount/snippets/login_extra.html" %}
+
+{% else %}
+<p>{% blocktrans %}If you have not created an account yet, then please
+<a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
+{% endif %}
+
+<form class="login form-group" method="POST" action="{% url 'account_login' %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  {% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+  {% endif %}
+  
+  <p>{% blocktrans with site.name as site_name %}Not a member? <a href="{{ signup_url }}">Register</a>
+    {% endblocktrans %}</p>
+  <a class="btn-link mr-5" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+  <button class="primaryAction btn btn-primary w-50" type="submit">{% trans "Sign In" %}</button>
+</form>
+</div>
+</div>
+</div>
+{% endblock %}

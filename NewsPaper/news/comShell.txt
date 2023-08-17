@@ -1,0 +1,64 @@
+from news.models import *
+user1 = User.objects.create(username="Mike", first_name='Mike')
+Author.objects.create(authorUser=user1)
+user2 = User.objects.create(username="Anon", first_name="Alex") 
+Author.objects.create(authorUser = user2)
+
+Category.objects.create(categoryName="IT")
+Category.objects.create(categoryName="Sport")
+Category.objects.create(categoryName="Science")
+Category.objects.create(categoryName="Business") 
+
+Post.objects.create(author=Author.objects.get(authorUser=User.objects.get(username="Mike")), categoryType="AR", title="Python", text="lorem ipsum")
+Post.objects.create(author=Author.objects.get(authorUser=User.objects.get(username="Mike")), categoryType="NW", title="Django", text="Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ")
+Post.objects.create(author=Author.objects.get(authorUser=User.objects.get(username="Anon")), categoryType="AR", title="Microbiology", text="Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur.")
+
+post1 = Post.objects.get(pk=1)
+post2 = Post.objects.get(title="Django")
+post3 = Post.objects.get(pk = 3)
+
+category1 = Category.objects.get(pk = 1) 
+category2 = Category.objects.get(categoryName = "Science")
+category3 = Category.objects.get(pk = 3)
+category4 = Category.objects.get(categoryName = "Business") 
+
+post1.postCategory.add(category1, category3)
+post2.postCategory.add(category1, category4)
+post3.postCategory.add(category3, category4)
+
+Comment.objects.create(commentUser = User.objects.get(username = "Mike"), commentPost = Post.objects.get(pk = 1), text = "first comment text")
+Comment.objects.create(commentUser = User.objects.get(username = "Mike"), commentPost = Post.objects.get(pk = 2), text = "second comment text")
+Comment.objects.create(commentUser = User.objects.get(username = "Anon"), commentPost = Post.objects.get(pk = 3), text = "third comment text")
+Comment.objects.create(commentUser = User.objects.get(username = "Anon"), commentPost = Post.objects.get(pk = 1), text = "fourth comment text")
+
+Post.objects.get(pk =1).like()
+Post.objects.get(pk =1).like()
+Post.objects.get(pk =1).like()
+Post.objects.get(pk =1).like()
+Post.objects.get(pk =2).like() 
+Post.objects.get(pk =2).like()
+Post.objects.get(pk =3).dislike() 
+Post.objects.get(pk =3).dislike()
+Post.objects.get(pk =1).dislike()
+
+Comment.objects.get(pk=1).like()
+Comment.objects.get(pk=1).like()
+Comment.objects.get(pk=2).like() 
+Comment.objects.get(pk=2).like()
+Comment.objects.get(pk=2).like()
+Comment.objects.get(pk=3).like() 
+Comment.objects.get(pk=2).dislike()
+
+Author.objects.get(authorUser = User.objects.get(username="Mike")).update_rating()
+Author.objects.get(authorUser = User.objects.get(username="Anon")).update_rating()
+
+best_author = Author.objects.all().order_by("-authorRating")[0]
+print({best_author.authorUser.username: best_author.authorRating})
+
+best_post = Post.objects.filter(categoryType = 'AR').order_by('-rating')[0]
+print(f'{best_post.creationData}, {best_post.author.authorUser.username}, {best_post.rating}, {best_post.title}, {best_post.preview()}')
+Post.objects.filter(categoryType = 'AR').order_by('-rating').values('creationData', 'author__authorUser__username', 'rating', 'title', 'text')[0]
+
+comment = Comment.objects.filter(commentPost = best_post)
+for i in comment:
+    print(i.creationDate, i.commentUser.username, i.rating, i.text)

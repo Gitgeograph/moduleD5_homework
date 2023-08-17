@@ -1,0 +1,15 @@
+{% extends 'layout/base.html' %}
+{% block title %}
+Profile
+{% endblock title %}
+
+{% block content %}
+<h2>
+  Страница авторизованного пользователя {{request.user.username}}
+</h2>
+
+<div>
+ Здесь может содержаться персональная информация для каждого пользователя
+</div>
+
+{% endblock content %}
